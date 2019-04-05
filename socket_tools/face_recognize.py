@@ -1,4 +1,5 @@
 import face_recognition
+import os
 import cv2
 import time
 # This is a demo of running face recognition on live video from your webcam. It's a little more complicated than the
@@ -18,47 +19,61 @@ class face_recognize(object):
 
     def __init__(self):
         # Load a sample picture and learn how to recognize it.
-        obama_image = face_recognition.load_image_file("xingtong1.jpg")
-        obama_face_encoding = face_recognition.face_encodings(obama_image)[0]
-
-        # Load a second sample picture and learn how to recognize it.
-        biden_image = face_recognition.load_image_file("meinv.jpg")
-        biden_face_encoding = face_recognition.face_encodings(biden_image)[0]
+        # obama_image = face_recognition.load_image_file("xingtong1.jpg")
+        # obama_face_encoding = face_recognition.face_encodings(obama_image)[0]
+        #
+        # # Load a second sample picture and learn how to recognize it.
+        # biden_image = face_recognition.load_image_file("meinv.jpg")
+        # biden_face_encoding = face_recognition.face_encodings(biden_image)[0]
 
         # Create arrays of known face encodings and their names
         self.known_face_encodings = [
-            obama_face_encoding,
-            biden_face_encoding
+            # obama_face_encoding,
+            # biden_face_encoding
         ]
         self.known_face_names = [
-            "XingTong",
-            "Mei Nv"
+            # "XingTong",
+            # "Mei Nv"
         ]
+        self.load_files=[]
 
         # Initialize some variables
         self.face_locations = []
         self.face_encodings = []
         self.face_names = []
+        self.get_all_images()
+
+    def get_all_images(self):
+        print('Begin load face image information')
+        upper_dir=os.path.abspath(os.path.join(os.getcwd(), ".."))
+        folder_path = os.path.join(upper_dir,'images')
+        print(folder_path)
+        files=os.listdir(folder_path)
+        this_time_load_num=0
+        for file in files:
+            if file not in self.load_files:
+                this_time_load_num+=1
+                image_path = os.path.join(folder_path, file)
+                name=file.split('.')[0]
+                face_image=face_recognition.load_image_file(image_path)
+                face_image_coding=face_recognition.face_encodings(face_image)[0]
+                self.known_face_encodings.append(face_image_coding)
+                self.known_face_names.append(name)
+                self.load_files.append(file)
+        print("load face image information has finished. there are %d image"
+              "being loaded at this time. there are %d image totally" % (this_time_load_num, len(self.load_files)))
+
 
     def face_recognize(self, face_image=None,**kwargs):
         if face_image is None or len(face_image)==0:
             return
 
-        # Resize frame of video to 1/2 size for faster face recognition processing
-        # small_frame = cv2.resize(face_image, (0, 0), fx=0.25, fy=0.25)
-        # Convert the image from BGR color (which OpenCV uses) to RGB color (which face_recognition uses)
-        # rgb_small_frame = small_frame[:, :, ::-1]
-
         # Find all the faces and face encodings in the current frame of video
-        face_locations = face_recognition.face_locations(face_image)
-        face_encodings = face_recognition.face_encodings(face_image, face_locations)
-
-        # face_locations=kwargs.get('face_locations')
-        # face_encodings=kwargs.get('face_encodings')
+        face_locations = face_recognition.face_locations(face_image, number_of_times_to_upsample=1, model="hog")
+        face_encodings = face_recognition.face_encodings(face_image, face_locations, num_jitters=2)
 
         face_names = []
         for face_encoding in face_encodings:
-                # print(face_encoding)
                 # See if the face is a match for the known face(s)
             matches = face_recognition.compare_faces(self.known_face_encodings, face_encoding)
             name = "Unknown"
@@ -73,24 +88,4 @@ class face_recognize(object):
                     #save the frame as image which is named after iname
             face_names.append(name)
 
-        # process_this_frame = not process_this_frame
-
-        # font = cv2.FONT_HERSHEY_DUPLEX
-        # Display the results
-
-        # for (top, right, bottom, left), name in zip(face_locations, face_names):
-        #     # Scale back up face locations since the frame we detected in was scaled to 1/5 size
-        #     top *= 4
-        #     right *= 4
-        #     bottom *= 4
-        #     left *= 4
-        #
-        #     # Draw a box around the face
-        #     cv2.rectangle(face_image, (left, top), (right, bottom), (0, 0, 255), 2)
-        #
-        #     # Draw a label with a name below the face
-        #     cv2.rectangle(face_image, (left, bottom - 35), (right, bottom), (0, 0, 255), cv2.FILLED)
-        #
-        #     cv2.putText(face_image, name, (left + 6, bottom - 6), font, 1.0, (255, 255, 255), 1)
-        # return face_image
         return face_locations, face_names
