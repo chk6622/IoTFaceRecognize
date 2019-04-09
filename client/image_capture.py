@@ -1,5 +1,6 @@
 #!/usr/bin/python
 #-*-coding:utf-8 -*-
+from typing import Union
 
 from socket_tools.connection_tool import connector
 import cv2
@@ -9,6 +10,7 @@ import face_recognition
 from multiprocessing import Queue
 from client.image_send import image_send
 from datetime import datetime
+import os
 
 
 if __name__=='__main__':
@@ -21,8 +23,11 @@ if __name__=='__main__':
 
     # resize=0.25 # Resize frame of video  for faster face recognition processing
     # recoverParam=4#int(1/resize)
-    skip_frames=25
-    capture = cv2.VideoCapture(0)
+    skip_frames=10
+    upper_dir = os.path.abspath(os.path.join(os.getcwd(), ".."))
+    video_path = os.path.join(upper_dir, 'video','test_1.mp4')
+    # print(video_path)
+    capture = cv2.VideoCapture(video_path)
 
 
 
@@ -43,8 +48,10 @@ if __name__=='__main__':
 
         if index%skip_frames==0:
             inputQueue.put(frame.copy())
+            time.sleep(2)
         else:
-            time.sleep(0.06)
+            time.sleep(0.2)
+            continue
         #
         if outputQueue.qsize()>0:
             response_msg=outputQueue.get(block=True)
@@ -76,9 +83,9 @@ if __name__=='__main__':
             print(name)
             cv2.putText(frame, name, (100, 300-ind*15), font, 0.5, (255, 255, 255), 1)
 
-        big_frame = cv2.resize(frame, (0, 0), fx=2, fy=2)
+        # big_frame = cv2.resize(frame, (0, 0), fx=1.5, fy=1.5)
         cv2.namedWindow("Image")
-        cv2.imshow("Image", big_frame)
+        cv2.imshow("Image", frame)
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
 

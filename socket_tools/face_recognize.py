@@ -18,23 +18,10 @@ import time
 class face_recognize(object):
 
     def __init__(self):
-        # Load a sample picture and learn how to recognize it.
-        # obama_image = face_recognition.load_image_file("xingtong1.jpg")
-        # obama_face_encoding = face_recognition.face_encodings(obama_image)[0]
-        #
-        # # Load a second sample picture and learn how to recognize it.
-        # biden_image = face_recognition.load_image_file("meinv.jpg")
-        # biden_face_encoding = face_recognition.face_encodings(biden_image)[0]
 
         # Create arrays of known face encodings and their names
-        self.known_face_encodings = [
-            # obama_face_encoding,
-            # biden_face_encoding
-        ]
-        self.known_face_names = [
-            # "XingTong",
-            # "Mei Nv"
-        ]
+        self.known_face_encodings = []
+        self.known_face_names = []
         self.load_files=[]
 
         # Initialize some variables
@@ -47,7 +34,7 @@ class face_recognize(object):
         print('Begin load face image information')
         upper_dir=os.path.abspath(os.path.join(os.getcwd(), ".."))
         folder_path = os.path.join(upper_dir,'images')
-        print(folder_path)
+        # print(folder_path)
         files=os.listdir(folder_path)
         this_time_load_num=0
         for file in files:
@@ -69,15 +56,15 @@ class face_recognize(object):
             return
 
         # Find all the faces and face encodings in the current frame of video
-        face_locations = face_recognition.face_locations(face_image, number_of_times_to_upsample=2, model="hog")
+        face_locations = face_recognition.face_locations(face_image, number_of_times_to_upsample=3, model="hog")
         face_encodings=[]
         if len(face_locations)>0:
-            face_encodings = face_recognition.face_encodings(face_image, face_locations, num_jitters=2)
+            face_encodings = face_recognition.face_encodings(face_image, face_locations, num_jitters=1)
 
         face_names = []
         for face_encoding in face_encodings:
                 # See if the face is a match for the known face(s)
-            matches = face_recognition.compare_faces(self.known_face_encodings, face_encoding, tolerance=0.5)
+            matches = face_recognition.compare_faces(self.known_face_encodings, face_encoding, tolerance=0.3)
             name = "Unknown"
 
             # If a match was found in known_face_encodings, just use the first one.
