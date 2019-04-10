@@ -43,7 +43,7 @@ class face_recognize(object):
                 image_path = os.path.join(folder_path, file)
                 name=file.split('.')[0]
                 face_image=face_recognition.load_image_file(image_path)
-                face_image_coding=face_recognition.face_encodings(face_image)[0]
+                face_image_coding=face_recognition.face_encodings(face_image, num_jitters=3)[0]
                 self.known_face_encodings.append(face_image_coding)
                 self.known_face_names.append(name)
                 self.load_files.append(file)
@@ -59,7 +59,7 @@ class face_recognize(object):
         face_locations = face_recognition.face_locations(face_image, number_of_times_to_upsample=3, model="hog")
         face_encodings=[]
         if len(face_locations)>0:
-            face_encodings = face_recognition.face_encodings(face_image, face_locations, num_jitters=1)
+            face_encodings = face_recognition.face_encodings(face_image, face_locations, num_jitters=3)
 
         face_names = []
         for face_encoding in face_encodings:
