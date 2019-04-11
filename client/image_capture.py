@@ -25,9 +25,9 @@ if __name__=='__main__':
 
     # resize=0.25 # Resize frame of video  for faster face recognition processing
     # recoverParam=4#int(1/resize)
-    skip_frames=60
+    skip_frames = 30
     upper_dir = os.path.abspath(os.path.join(os.getcwd(), ".."))
-    video_path = os.path.join(upper_dir, 'video','test_1.mp4')
+    video_path = os.path.join(upper_dir, 'video','test_3.mp4')
     # print(video_path)
     capture = cv2.VideoCapture(0)
 
@@ -41,8 +41,11 @@ if __name__=='__main__':
     display_names=[]
     the_last_name_index=0
     recogn_frame=None
+    temp_recogn_frame=None
     info_shower=InfoShower()
     print_infos = []
+
+    isSend = True
     while True:
         index+=1
         if index>=10000000:
@@ -51,46 +54,41 @@ if __name__=='__main__':
         if not ret:
             break
 
-        if index%skip_frames==0:
+        if frame is not None:
+            height, width, col = frame.shape
+
+        if isSend: #index%skip_frames==0:
             recogn_frame = frame.copy()
             inputQueue.put(recogn_frame)
+            isSend = False
         else:
             time.sleep(0.05)
 
-        if recogn_frame is not None:
-            temp_recogn_frame = recogn_frame.copy()
-        #
-        if outputQueue.qsize()>0:
+        # if recogn_frame is not None:
+        #     temp_recogn_frame = recogn_frame.copy()
+
+        if outputQueue.qsize() > 0:
             response_msg = outputQueue.get()
+            isSend = True
 
         if response_msg is not None:
-            for (top, right, bottom, left, name) in response_msg:
-                # Draw a box around the face
-                # print(top, right, bottom, left, name)
+            temp_recogn_frame = recogn_frame.copy()
+            for (captured_location, captured_time, top, right, bottom, left, name) in response_msg:
                 cv2.rectangle(temp_recogn_frame, (left, top), (right, bottom), (0, 0, 255), 2)
-
-                time1 = datetime.now()
-                info_shower.add_captured_info(time1.strftime('%Y-%m-%d %H:%M:%S')+' : '+name)
-
-                # Draw a label with a name below the face
-                # cv2.rectangle(frame, (left, bottom - 35), (right, bottom), (0, 0, 255), cv2.FILLED)
-
-                # cv2.putText(frame, name, (left + 6, bottom - 6), font, 0.5, (255, 255, 255), 1)
-
-        if index % 20 == 0:
+                info_shower.add_captured_info('%s,%s,%s is detected' % (captured_location, captured_time, name))
             print_infos = info_shower.get_show_info()
+            ind = 1
+            for print_info in print_infos:
+                cv2.putText(temp_recogn_frame, print_info, (10, height-10-ind*15), font, 0.5, (255, 255, 255), 1)
+                ind += 2
+            response_msg = None
 
-        ind = 0
-        for print_info in print_infos:
-            cv2.putText(temp_recogn_frame, print_info, (100, 300-ind*15), font, 0.5, (255, 255, 255), 1)
-            ind += 2
-
-        # big_frame = cv2.resize(frame, (0, 0), fx=1.5, fy=1.5)
-        if recogn_frame is not None:
-            cv2.namedWindow("Image")
+        cv2.namedWindow("Image")
+        if temp_recogn_frame is not None:
             cv2.imshow("Image", np.hstack([frame, temp_recogn_frame]))
-            # cv2.imshow("Image", frame)
-            if cv2.waitKey(1) & 0xFF == ord('q'):
-                break
+        elif recogn_frame is not None:
+            cv2.imshow("Image", np.hstack([frame, recogn_frame]))
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
 
     cv2.destroyAllWindows()

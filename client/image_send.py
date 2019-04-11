@@ -4,11 +4,12 @@
 import multiprocessing
 import cv2
 import time
+from datetime import datetime
 from socket_tools.connection_tool import connector
 import traceback
 
 class image_send(multiprocessing.Process):
-    def __init__(self,inputQueue=None,outputQueue=None):
+    def __init__(self,inputQueue=None,outputQueue=None,location='WZ313'):
         multiprocessing.Process.__init__(self)
         self.inputQueue=inputQueue
         self.outputQueue=outputQueue
@@ -17,6 +18,7 @@ class image_send(multiprocessing.Process):
         self.client = self.connectToRemoteHost(remote_ip,remote_port)
         self.resize = 1  # Resize frame of video  for faster face recognition processing
         self.recoverParam = int(1/self.resize)
+        self.location=location
         # print('init %s finished' % self.__class__)
 
     def connectToRemoteHost(self,remote_ip='localhost',remote_port='8080'):
@@ -42,17 +44,22 @@ class image_send(multiprocessing.Process):
         # Convert the image from BGR color (which OpenCV uses) to RGB color (which face_recognition uses)
         rgb_small_frame = small_frame[:, :, ::-1]
 
-        self.client.send_data(rgb_small_frame)
+        capture_time = (datetime.now()).strftime('%Y-%m-%d %H:%M:%S')
+        send_msg=(capture_time,self.location,rgb_small_frame)
+        self.client.send_data(send_msg)
+
         response_msg = self.client.recv_data()
         if response_msg is not None:
             face_locations = response_msg.get('face_locations')
             face_names = response_msg.get('face_names')
+            captured_location = response_msg.get('captured_location')
+            captured_time = response_msg.get('captured_time')
             for (top, right, bottom, left), name in zip(face_locations, face_names):
                 top *= self.recoverParam
                 right *= self.recoverParam
                 bottom *= self.recoverParam
                 left *= self.recoverParam
-                lReturn.append(((top, right, bottom, left, name)))
+                lReturn.append((captured_location, captured_time, top, right, bottom, left, name))
         return lReturn
 
     def send_image(self):
