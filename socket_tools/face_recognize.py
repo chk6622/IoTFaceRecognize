@@ -54,9 +54,9 @@ class face_recognize(object):
     def face_recognize(self, face_image=None,**kwargs):
         if face_image is None or len(face_image)==0:
             return
-
+        (captured_location, captured_time, face_image) = face_image
         # Find all the faces and face encodings in the current frame of video
-        face_locations = face_recognition.face_locations(face_image, number_of_times_to_upsample=3, model="hog")
+        face_locations = face_recognition.face_locations(face_image, number_of_times_to_upsample=2, model="hog")
         face_encodings=[]
         if len(face_locations)>0:
             face_encodings = face_recognition.face_encodings(face_image, face_locations, num_jitters=3)
@@ -64,7 +64,7 @@ class face_recognize(object):
         face_names = []
         for face_encoding in face_encodings:
                 # See if the face is a match for the known face(s)
-            matches = face_recognition.compare_faces(self.known_face_encodings, face_encoding, tolerance=0.3)
+            matches = face_recognition.compare_faces(self.known_face_encodings, face_encoding, tolerance=0.4)
             name = "Unknown"
 
             # If a match was found in known_face_encodings, just use the first one.
@@ -77,4 +77,4 @@ class face_recognize(object):
                     #save the frame as image which is named after iname
             face_names.append(name)
 
-        return face_locations, face_names
+        return captured_location, captured_time, face_locations, face_names

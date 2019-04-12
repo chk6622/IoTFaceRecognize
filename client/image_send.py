@@ -13,9 +13,9 @@ class image_send(multiprocessing.Process):
         multiprocessing.Process.__init__(self)
         self.inputQueue=inputQueue
         self.outputQueue=outputQueue
-        remote_port = 8080
-        remote_ip = 'localhost'
-        self.client = self.connectToRemoteHost(remote_ip,remote_port)
+        self.remote_port = 8080
+        self.remote_ip = 'localhost'
+
         self.resize = 1  # Resize frame of video  for faster face recognition processing
         self.recoverParam = int(1/self.resize)
         self.location=location
@@ -24,20 +24,25 @@ class image_send(multiprocessing.Process):
     def connectToRemoteHost(self,remote_ip='localhost',remote_port='8080'):
         client=None
         try:
-            client=connector(remote_ip,remote_port)
-            client.create_client()
+            conn=connector(remote_ip,remote_port)
+            client=conn.create_client()
         except Exception as e:
             traceback.print_exc()
             client=None
         return client
 
-    def close_client(self):
-        if self.client is not None:
-            self.client.close_conn()
-            self.client=None
+    # def close_client(self):
+    #     if self.client is not None:
+    #         self.client.close()
+    #         self.client=None
 
 
     def recognize_face(self, frame):
+        if frame is None:
+            return
+        client = self.connectToRemoteHost(self.remote_ip, self.remote_port)
+        if client is None:
+            return
         lReturn=[]
         small_frame = cv2.resize(frame, (0, 0), fx=self.resize, fy=self.resize)
 
@@ -46,20 +51,25 @@ class image_send(multiprocessing.Process):
 
         capture_time = (datetime.now()).strftime('%Y-%m-%d %H:%M:%S')
         send_msg=(capture_time,self.location,rgb_small_frame)
-        self.client.send_data(send_msg)
+        client.send(send_msg)
 
-        response_msg = self.client.recv_data()
-        if response_msg is not None:
-            face_locations = response_msg.get('face_locations')
-            face_names = response_msg.get('face_names')
-            captured_location = response_msg.get('captured_location')
-            captured_time = response_msg.get('captured_time')
-            for (top, right, bottom, left), name in zip(face_locations, face_names):
-                top *= self.recoverParam
-                right *= self.recoverParam
-                bottom *= self.recoverParam
-                left *= self.recoverParam
-                lReturn.append((captured_location, captured_time, top, right, bottom, left, name))
+        while True:
+            response_msg = client.recv()
+            if response_msg is not None:
+                face_locations = response_msg.get('face_locations')
+                face_names = response_msg.get('face_names')
+                captured_location = response_msg.get('captured_location')
+                captured_time = response_msg.get('captured_time')
+                for (top, right, bottom, left), name in zip(face_locations, face_names):
+                    top *= self.recoverParam
+                    right *= self.recoverParam
+                    bottom *= self.recoverParam
+                    left *= self.recoverParam
+                    lReturn.append((captured_location, captured_time, top, right, bottom, left, name))
+                client.close()
+                break
+            else:
+                time.sleep(0.01)
         return lReturn
 
     def send_image(self):
@@ -69,8 +79,7 @@ class image_send(multiprocessing.Process):
             frame=self.inputQueue.get(block=True)
             if frame is not None:
                 respone_msg=self.recognize_face(frame)
-            self.outputQueue.put(respone_msg,block=True)
-            time.sleep(0.1)
+                self.outputQueue.put(respone_msg,block=True)
 
     def run(self):
         self.send_image()
