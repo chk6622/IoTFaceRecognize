@@ -21,12 +21,13 @@ class ReturnRecognitionResultProcessor(BaseProcessor):
         if processObj is not None:
             face_names = processObj.face_names
             face_locations = processObj.face_locations
-            conn=processObj.conn
+            myConn=processObj.conn
             response_msg={}
             response_msg['face_names']=face_names
             response_msg['face_locations']=face_locations
-            if conn is not None:
-                conn.send(response_msg)
-                time.sleep(0.05)
-                conn.close()
+            if myConn is not None:
+                myConn.send(response_msg)
+                # time.sleep(0.05)
+                # print(myConn)
+                # myConn.close()
         return processObj

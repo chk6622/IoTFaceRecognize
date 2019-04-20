@@ -18,6 +18,7 @@ import bizprocessor.FaceComparingProcessor
 import bizprocessor.FaceEncodingProcessor
 import bizprocessor.AttendenceFormStoreProcessor
 import bizprocessor.ReturnRecognitionResultProcessor
+import bizprocessor.FaceDataProducer_Mqtt
 
 
 class ConsumerThreadScheduler(object):

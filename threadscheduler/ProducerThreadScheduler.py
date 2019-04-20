@@ -10,7 +10,7 @@ from queue import Queue
 from logger.LogConfig import appLogger
 from baseprocessor.LastProcessor import LastProcessor
 from baseprocessor.BaseProcessor import BaseProcessor
-import bizprocessor.FaceDataProducer
+import bizprocessor.FaceDataProducer_Mqtt
 
 
 class ProducerThreadScheduler(object):

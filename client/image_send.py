@@ -66,7 +66,7 @@ class image_send(multiprocessing.Process):
                     bottom *= self.recoverParam
                     left *= self.recoverParam
                     lReturn.append((captured_location, captured_time, top, right, bottom, left, name))
-                client.close()
+                # client.close()
                 break
             else:
                 time.sleep(0.01)

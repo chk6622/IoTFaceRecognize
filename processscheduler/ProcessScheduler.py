@@ -15,7 +15,7 @@ from logger.StreamLogger import StreamLogger
 from logger.LogConfig import appLogger
 from model.StreamBox import StreamBox
 from bizprocessor.FaceDataProducer import FaceDataProducer
-
+import traceback
 
 class ProcessScheduler(object):
     def __init__(self,streamLineTemplate,processQueueSize=10):
@@ -80,7 +80,14 @@ class ProcessScheduler(object):
         productCount=-1
         stat=Statistics()
         while True:
-            streamBox=outputQueue.get()
+            try:
+                # print('123')
+                # print(outputQueue)
+                streamBox=outputQueue.get()
+                # print('456')
+            except Exception as e:
+
+                traceback.print_exc()
             if streamBox:
                 if isinstance(streamBox, StreamLogger):
                     stat.addProcessorLog(streamBox)

@@ -9,6 +9,6 @@ Created on Apr 09, 2019
 import os
 import logging.config
 
-BASE_DIR=BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+BASE_DIR= os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 logging.config.fileConfig(os.path.join(BASE_DIR,'logger','../logging.conf'))
 appLogger = logging.getLogger("FaceRecognizing")

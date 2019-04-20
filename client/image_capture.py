@@ -29,7 +29,7 @@ if __name__=='__main__':
     upper_dir = os.path.abspath(os.path.join(os.getcwd(), ".."))
     video_path = os.path.join(upper_dir, 'video','test_3.mp4')
     # print(video_path)
-    capture = cv2.VideoCapture(0)
+    capture = cv2.VideoCapture(video_path)
 
 
 
@@ -83,7 +83,7 @@ if __name__=='__main__':
                 ind += 2
             response_msg = None
 
-        cv2.namedWindow("Image")
+        # cv2.namedWindow("Image")
         if temp_recogn_frame is not None:
             cv2.imshow("Image", np.hstack([frame, temp_recogn_frame]))
         elif recogn_frame is not None:

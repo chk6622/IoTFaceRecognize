@@ -20,7 +20,8 @@ class BaseModel(Model):
 
 class attendence_form(BaseModel):
     student_name = CharField()
-    location= CharField()
+    university= CharField()
+    classroom=CharField()
     datetime= CharField()
 
 
