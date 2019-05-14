@@ -7,14 +7,28 @@ Created on Apr 09, 2019
 '''
 from baseprocessor.BaseProcessor import BaseProcessor
 import cv2
-import numpy as np
+from datetime import datetime
 import utiles.Tools as Tools
+import os
 
-# def getWebPageSipder(appConfig):
-#     mainPageUrl=appConfig.get('WebPageSpider','MAIN_PAGE_URL')
-#     cookiePath=appConfig.get('WebPageSpider','COOKIE_PATH')
-#     tempDocPath=appConfig.get('WebPageSpider','TEMP_DOC_PATH')
-#     return WebPageSpider(mainPageUrl,cookiePath,tempDocPath)
+def get_parent_folder_path():
+    return os.path.abspath(os.path.dirname(os.getcwd()))
+
+def get_grand_parent_folder_path():
+    return os.path.abspath(os.path.join(os.getcwd(), "../.."))
+
+def get_abs_path(base_path,path_names):
+    return os.path.join(base_path,path_names)
+
+folder_path='video'
+parent_folder_path=get_parent_folder_path()
+output_folder=get_abs_path(parent_folder_path,folder_path)
+
+time1 = datetime.now()
+file_name = '%s.avi' % time1.strftime('%Y-%m-%d %H:%M')
+
+output_file=get_abs_path(output_folder,file_name)
+
 
 class ShowFaceImageProcessor(BaseProcessor):
     '''
@@ -24,6 +38,7 @@ class ShowFaceImageProcessor(BaseProcessor):
     def __init__(self,inputQueue=None,outputQueue=None):
         super(ShowFaceImageProcessor,self).__init__(inputQueue=inputQueue,outputQueue=outputQueue)
         self.font = cv2.FONT_HERSHEY_DUPLEX
+        self.out = cv2.VideoWriter(output_file, -1, 25.0, (800, 600))
 
             
     def process(self,processObj=None):
@@ -43,6 +58,7 @@ class ShowFaceImageProcessor(BaseProcessor):
             cv2.putText(frame, frame_info, (5, 30), self.font, 1.0, (255, 255, 255), 1)
             cv2.namedWindow("Image")
             cv2.imshow("Image", frame)
+            self.out.write(frame)
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 pass
             #     break
