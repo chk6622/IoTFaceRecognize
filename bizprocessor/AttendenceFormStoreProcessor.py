@@ -20,9 +20,12 @@ class AttendenceFormStoreProcessor(BaseProcessor):
     def process(self, processObj=None):
         if processObj is not None:
             face_names = processObj.face_names
-            captured_university=processObj.captured_university
-            captured_classroom=processObj.captured_classroom
-            captured_time = processObj.captured_time
-            for name in face_names:
-                attendence_form.create(university=captured_university,classroom=captured_classroom, datetime=captured_time, student_name=name)
+            if face_names is not None and len(face_names)>0:
+                captured_university=processObj.captured_university
+                captured_classroom=processObj.captured_classroom
+                captured_time = processObj.captured_time
+                for name in face_names:
+                    if name == 'Unknown':
+                        continue
+                    attendence_form.create(university=captured_university,classroom=captured_classroom, datetime=captured_time, student_name=name)
         return processObj

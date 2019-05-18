@@ -17,7 +17,7 @@ major_ver, minor_ver, subminor_ver = (cv2.__version__).split('.')
 
 
 # Load a sample picture and learn how to recognize it.
-#obama_image = face_recognition.load_image_file("xingtong1.jpg")
+#obama_image = face_recognition.load_image_file("Tong_1.jpg")
 #obama_face_encoding = face_recognition.face_encodings(obama_image)[0]
 
 # Load a second sample picture and learn how to recognize it.

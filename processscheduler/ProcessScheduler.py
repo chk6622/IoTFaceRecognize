@@ -92,7 +92,7 @@ class ProcessScheduler(object):
                 if isinstance(streamBox, StreamLogger):
                     stat.addProcessorLog(streamBox)
                     process_record+=1  #the product which has been processed adds 1
-                    if process_record%2==0:
+                    if process_record%50==0:
                         appLogger.info('\n%s' % stat.getStatisticInfo())  #print log
                 if isinstance(streamBox, StopSignal):
                     productCount=streamBox.productCount  #get product count

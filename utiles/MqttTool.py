@@ -27,7 +27,7 @@ class MqttTool(object):
     def __init__(self):
         self.HOST = "a2xskqc7e823wb-ats.iot.ap-southeast-2.amazonaws.com"
         self.PORT = 8883
-        self.topic = 'aut/#'
+        self.topic = 'AUT/#'
         self.caPath = os.path.join(BASE_DIR,'security','AmazonRootCA1.pem')  # Root certificate authority, comes from AWS with a long, long name
         self.certPath = os.path.join(BASE_DIR,'security','8aab8da6e0-certificate.pem.crt')
         self.keyPath = os.path.join(BASE_DIR,'security','8aab8da6e0-private.pem.key')

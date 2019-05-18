@@ -22,17 +22,17 @@ if __name__ == '__main__':
 #     print sys.modules['logger.StreamLogger']
     streamLineTemplate=[]
     processQueueSize=50
-    streamLineTemplate.append({'QueueSize':50,'pCount':1,'Thread':['bizprocessor.FaceDataProducer','FaceDataProducer',1]})
+    streamLineTemplate.append({'QueueSize':50,'pCount':1,'Thread':['bizprocessor.FaceDataProducer_Mqtt','FaceDataProducer_Mqtt',1]})
     streamLineTemplate.append({'QueueSize':50,'pCount':1,'Thread':[
                                                                 ['bizprocessor.FaceCapturingProcessor','FaceCapturingProcessor',1]
                                                                    ]})
-    # streamLineTemplate.append({'QueueSize':50,'pCount':2,'Thread':[['bizprocessor.FaceEncodingProcessor','FaceEncodingProcessor',10]]})
+    streamLineTemplate.append({'QueueSize':50,'pCount':1,'Thread':[['bizprocessor.FaceEncodingProcessor','FaceEncodingProcessor',1]]})
     streamLineTemplate.append({'QueueSize': 50, 'pCount': 1, 'Thread':[
-                                                                    ['bizprocessor.FaceEncodingProcessor','FaceEncodingProcessor',1]
-                                                                    ,['bizprocessor.FaceComparingProcessor', 'FaceComparingProcessor', 1]
+                                                                    # ['bizprocessor.FaceEncodingProcessor','FaceEncodingProcessor',1]
+                                                                    ['bizprocessor.FaceComparingProcessor', 'FaceComparingProcessor', 1]
                                                                     ,['bizprocessor.AttendenceFormStoreProcessor', 'AttendenceFormStoreProcessor', 1]
-                                                                    ,['bizprocessor.ReturnRecognitionResultProcessor', 'ReturnRecognitionResultProcessor', 1]
-                                                                    # ,['bizprocessor.ShowFaceImageProcessor','ShowFaceImageProcessor',1]
+                                                                    # ,['bizprocessor.ReturnRecognitionResultProcessor', 'ReturnRecognitionResultProcessor', 1]
+                                                                    ,['bizprocessor.ShowFaceImageProcessor','ShowFaceImageProcessor',1]
                                                                     ]})
  
      

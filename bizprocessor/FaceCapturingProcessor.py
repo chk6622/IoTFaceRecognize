@@ -8,12 +8,8 @@ Created on Apr 09, 2019
 from baseprocessor.BaseProcessor import BaseProcessor
 import cv2
 import face_recognition
+from utiles.Tools import *
 
-# def getWebPageSipder(appConfig):
-#     mainPageUrl=appConfig.get('WebPageSpider','MAIN_PAGE_URL')
-#     cookiePath=appConfig.get('WebPageSpider','COOKIE_PATH')
-#     tempDocPath=appConfig.get('WebPageSpider','TEMP_DOC_PATH')
-#     return WebPageSpider(mainPageUrl,cookiePath,tempDocPath)
 
 class FaceCapturingProcessor(BaseProcessor):
     '''
@@ -27,7 +23,10 @@ class FaceCapturingProcessor(BaseProcessor):
     def process(self,processObj=None):
         if processObj is not None:
             rgb_small_frame=processObj.rgb_small_frame
-            face_locations = face_recognition.face_locations(rgb_small_frame, number_of_times_to_upsample=3, model="hog")
-            processObj.face_locations=face_locations
+            if get_frame_time_difference(processObj.captured_time)<=3:
+                face_locations = face_recognition.face_locations(rgb_small_frame, number_of_times_to_upsample=2, model="hog")
+                processObj.face_locations=face_locations
+            else:
+                processObj.face_locations = None
         return processObj
 

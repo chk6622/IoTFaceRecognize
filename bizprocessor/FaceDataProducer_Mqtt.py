@@ -16,22 +16,7 @@ from datetime import datetime
 from socket_tools.connection_tool import connector
 from utiles.MqttTool import MqttTool
 import numpy as np
-
-
-# def getApiSpider(appConfig):
-#     apiKey=appConfig.get('ApiSpider','API_KEY')
-#     queryReturnMaxResult=appConfig.getint('ApiSpider','QUERY_RETURN_MAX_RESULTS')
-#     maxQueryCountLimit=appConfig.getint('ApiSpider','MAX_QUERY_COUNT_LIMIT')
-#     queryBeginYear=appConfig.get('ApiSpider','QUERY_BEGIN_YEAR')
-#     queryEndYear=appConfig.get('ApiSpider','QUERY_END_YEAR')
-#     return IeeeApiSpider(apiKey,queryReturnMaxResult,maxQueryCountLimit,queryBeginYear,queryEndYear)
-
-# def getKeywords(appConfig):
-#     aReturn=None
-#     keyWords=appConfig.get('KayWords','KEY_WORDS')
-#     if keyWords:
-#         aReturn=keyWords.split(',')
-#     return aReturn
+from utiles.Tools import *
 
 class FaceDataProducer_Mqtt(BaseProcessor):
     '''
@@ -51,6 +36,9 @@ class FaceDataProducer_Mqtt(BaseProcessor):
                 return None
             streamBox = StreamBox()
             streamBox.captured_university, streamBox.captured_classroom, streamBox.captured_time = topic.split('/')
+
+            if get_frame_time_difference(streamBox.captured_time)>1:
+                return None
             image = np.asarray(bytearray(data), dtype="uint8")
             frame = cv2.imdecode(image, cv2.IMREAD_COLOR)
             streamBox.rgb_small_frame=frame[:, :, ::-1]
@@ -84,7 +72,7 @@ class FaceDataProducer_Mqtt(BaseProcessor):
                         self.__class__.isServer = False
                         self.mqttTool.close()
                     self.outputQueue.put(processObj, block=True)
-                time.sleep(0.05)
+                time.sleep(0.01)
         except Exception as e:
             traceback.print_exc()
 
