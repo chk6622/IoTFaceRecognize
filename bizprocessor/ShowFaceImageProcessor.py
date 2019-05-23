@@ -39,7 +39,7 @@ class ShowFaceImageProcessor(BaseProcessor):
     def __init__(self,inputQueue=None,outputQueue=None):
         super(ShowFaceImageProcessor,self).__init__(inputQueue=inputQueue,outputQueue=outputQueue)
         self.font = cv2.FONT_HERSHEY_DUPLEX
-        self.out = cv2.VideoWriter(output_file, -1, 25.0, (800, 600))
+        # self.out = cv2.VideoWriter(output_file, -1, 25.0, (800, 600))
         self.iCount=0
 
             
@@ -63,9 +63,9 @@ class ShowFaceImageProcessor(BaseProcessor):
             cv2.namedWindow("Image")
             large_frame = cv2.resize(frame, (0, 0), fx=1.5, fy=1.5)
             cv2.imshow("Image", large_frame)
-            self.out.write(frame)
-            if self.iCount==10:
-                self.out.release()
+            # self.out.write(frame)
+            # if self.iCount==10:
+            #     self.out.release()
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 pass
             #     break

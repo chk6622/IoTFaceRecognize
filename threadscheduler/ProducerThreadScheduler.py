@@ -11,6 +11,7 @@ from logger.LogConfig import appLogger
 from baseprocessor.LastProcessor import LastProcessor
 from baseprocessor.BaseProcessor import BaseProcessor
 import bizprocessor.FaceDataProducer_Mqtt
+import bizprocessor.FaceDataProducer_Video
 
 
 class ProducerThreadScheduler(object):

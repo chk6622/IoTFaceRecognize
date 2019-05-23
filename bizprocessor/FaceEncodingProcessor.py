@@ -22,15 +22,18 @@ class FaceEncodingProcessor(BaseProcessor):
 
     def __init__(self,inputQueue=None,outputQueue=None):
         super(FaceEncodingProcessor,self).__init__(inputQueue=inputQueue,outputQueue=outputQueue)
-        # self.webSpider=getWebPageSipder(self.appConfig)
+        self.face_encodings = []
+        self.flag = True
             
     def process(self,processObj=None):
         if processObj is not None:
             rgb_small_frame=processObj.rgb_small_frame
             face_locations=processObj.face_locations
-            face_encodings = []
-            if face_locations is not None and len(face_locations) > 0:
-                face_encodings = face_recognition.face_encodings(rgb_small_frame, face_locations, num_jitters=2)
-            processObj.face_encodings=face_encodings
+            if self.flag:
+                self.face_encodings = face_recognition.face_encodings(rgb_small_frame, face_locations, num_jitters=2)
+                self.flag = False
+            else:
+                self.flag = True
+            processObj.face_encodings=self.face_encodings
         return processObj
 

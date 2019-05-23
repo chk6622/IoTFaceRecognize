@@ -62,32 +62,41 @@ class FaceDataProducer(BaseProcessor):
         return streamBox
 
 
-    # def getResultDataFromlocalhost(self):
-    #     upper_dir = os.path.abspath(os.path.join(os.getcwd(), ".."))
-    #     video_path = os.path.join(upper_dir, 'video', 'test_3.mp4')
-    #     capture = cv2.VideoCapture(0)
-    #     iFrame=0
-    #     capture.set(cv2.CAP_PROP_POS_FRAMES, iFrame)
-    #     captured_location='wz313'
-    #     while True:
-    #         captured_time = (datetime.now()).strftime('%Y-%m-%d %H:%M:%S')
-    #         ret, frame=capture.read()
-    #         iFrame += 11
-    #         capture.set(cv2.CAP_PROP_POS_FRAMES, iFrame)
-    #         #     break
-    #         if not ret:
-    #             break
-    #         small_frame = cv2.resize(frame, (0, 0), fx=0.25, fy=0.25)
-    #
-    #         # Convert the image from BGR color (which OpenCV uses) to RGB color (which face_recognition uses)
-    #         rgb_small_frame = small_frame[:, :, ::-1]
-    #         yield rgb_small_frame,frame,captured_location,captured_time
+    def getResultDataFromlocalhost(self):
+        upper_dir = os.path.abspath(os.path.join(os.getcwd(), ".."))
+        video_path = os.path.join(upper_dir, 'video', 'test_3.mp4')
+        capture = cv2.VideoCapture(0)
+        iFrame=0
+        # capture.set(cv2.CAP_PROP_POS_FRAMES, iFrame)
+        captured_location='wz313'
+        while True:
+            captured_time = (datetime.now()).strftime('%Y%m%d%H%M%S')
+            ret, frame=capture.read()
+            # iFrame += 11
+            # capture.set(cv2.CAP_PROP_POS_FRAMES, iFrame)
+            #     break
+            # if not ret:
+            #     break
+            small_frame = cv2.resize(frame, (0, 0), fx=0.25, fy=0.25)
+
+            # Convert the image from BGR color (which OpenCV uses) to RGB color (which face_recognition uses)
+            rgb_small_frame = small_frame[:, :, ::-1]
+            yield rgb_small_frame,frame,captured_location,captured_time
 
     def getConnFromRemote(self):
             conn = self.server.accept()
             return conn
 
-
+    def get_video_info(self,cap):
+        '''
+        get the video information
+        @return: video information
+        '''
+        video_info = {
+            'width': int(cap.get(cv2.CAP_PROP_FRAME_WIDTH)),
+            'height': int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT)),
+            'num_of_frames': int(cap.get(cv2.CAP_PROP_FRAME_COUNT))}
+        return video_info
 
 
             
